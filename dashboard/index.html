@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar — pre-token protocols ranked by implied value</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="wrap">
+  <p class="eyebrow">Token Launch Radar</p>
+  <h1>Pre-token protocols, ranked by implied value</h1>
+  <p class="lede">Every protocol below records no token in the snapshot. Each is ranked by the
+  value its token would carry if the protocol&rsquo;s record stayed as it is &mdash; estimated from
+  the snapshot&rsquo;s own figures, never from a list of names. The implied value is this
+  entry&rsquo;s claim, not a prediction that a token is issued.</p>
+  <p class="meta" id="metaLine"></p>
+</header>
+
+<section class="wrap stats" id="statsBar" aria-label="Coverage"></section>
+
+<section class="wrap controls" aria-label="Board controls">
+  <input id="q" type="search" placeholder="Search a protocol&hellip;" autocomplete="off">
+  <select id="catFilter" aria-label="Filter by category"></select>
+  <select id="chainFilter" aria-label="Filter by chain"></select>
+  <label class="check"><input id="wlOnly" type="checkbox"> Watchlist only</label>
+  <select id="sortSel" aria-label="Sort the board">
+    <option value="rank">Sort: rank</option>
+    <option value="tvl">Sort: TVL</option>
+    <option value="growth">Sort: 7-day growth</option>
+    <option value="age">Sort: age</option>
+    <option value="implied">Sort: implied value</option>
+  </select>
+  <span class="count" id="rowCount"></span>
+</section>
+
+<main class="wrap">
+  <section id="boardView">
+    <table class="board" id="boardTable">
+      <thead><tr>
+        <th data-sort="rank">#</th><th>Protocol</th><th>Category</th><th>Chains</th>
+        <th data-sort="tvl">TVL</th><th data-sort="growth">7d</th><th data-sort="age">Age</th>
+        <th data-sort="implied">Implied value</th><th>80% band</th>
+      </tr></thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+  </section>
+
+  <section id="detailView" hidden>
+    <p><a href="#" id="backLink">&larr; Back to the board</a></p>
+    <div id="detailBody"></div>
+  </section>
+</main>
+
+<section class="wrap panel" id="method">
+  <h2>How the value is estimated</h2>
+  <ol class="method-steps">
+    <li><strong>Calibrate.</strong> 128 protocols in the snapshot record a token with a market
+    cap. For each, the model takes the ratio of market cap to TVL &mdash; the multiple the
+    market already pays.</li>
+    <li><strong>Fit the curve.</strong> Protocols are grouped into six bands by TVL; the median
+    multiple in each band is fitted with a monotone (never rising) curve, so bigger
+    protocols are never credited with a richer multiple than smaller ones.</li>
+    <li><strong>Adjust.</strong> The curve value is corrected with the median residual for the
+    protocol&rsquo;s category, its seven-day TVL growth quartile, how long it has run, and how
+    many chains it spans. Corrections come from the calibration protocols only.</li>
+    <li><strong>Band it.</strong> The 80% band is the 10th&ndash;90th range of out-of-fold
+    residuals: honest about how wide real multiples run.</li>
+  </ol>
+  <div class="method-grid">
+    <div>
+      <h3>Honest validation</h3>
+      <p class="small">Median error of the implied multiple, the model refitted from scratch
+      on each split. The baseline predicts every protocol at the global median multiple.</p>
+      <table class="valid" id="validTable"></table>
+    </div>
+    <div>
+      <h3>The fitted curve</h3>
+      <p class="small">Hollow dots are the median multiple in each of the six TVL bands;
+      the gold line is the monotone curve fitted through them (neighbouring bands pooled
+      where a median rose). The ring marks the protocol in the detail view.</p>
+      <div id="curveChart"></div>
+    </div>
+  </div>
+  <p class="small note">The board covers the snapshot&rsquo;s whole watchlist and ranks
+  pre-token protocols the watchlist leaves out. Protocols whose token already trades are
+  used only to calibrate the curve &mdash; they never appear on the board.</p>
+</section>
+
+<footer class="wrap">
+  <p>Data: DefiLlama protocol snapshot, frozen at the fetch named above; every figure on this
+  page comes from that file. &ldquo;Records no token&rdquo; means the snapshot carries no token
+  record for the protocol &mdash; it may still have one. Implied values are estimates from a
+  statistical model, not offers, advice, or a forecast of any launch.</p>
+</footer>
+
+<script src="steps.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
